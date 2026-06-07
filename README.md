@@ -57,9 +57,9 @@ WanderLust is a simple MERN travel blog website ✈ This project is aimed to hel
 #
 
 > [!Note]
-> This project will be implemented on North California region (us-west-1).
+> This project will be implemented on Stockholm region (eu-north-1).
 
-- <b>Create 1 Master machine on AWS with 2CPU, 8GB of RAM (t2.large) and 29 GB of storage and install Docker on it.</b>
+- <b>Create 1 Master machine on AWS with 2CPU, 8GB of RAM (c7i-flex.large) and 29 GB of storage and install Docker on it.</b>
 #
 - <b>Open the below ports in security group of master machine and also attach same security group to Jenkins worker node (We will create worker node shortly)</b>
 ![image](https://github.com/user-attachments/assets/4e5ecd37-fe2e-4e4b-a6ba-14c7b62715a3)
@@ -123,23 +123,23 @@ sudo apt-get install jenkins -y
   - <b>Create EKS Cluster (Master machine)</b>
   ```bash
   eksctl create cluster --name=wanderlust \
-                      --region=us-east-2 \
+                      --region=eu-north-1 \
                       --version=1.30 \
                       --without-nodegroup
   ```
   - <b>Associate IAM OIDC Provider (Master machine)</b>
   ```bash
   eksctl utils associate-iam-oidc-provider \
-    --region us-east-2 \
+    --region eu-north-1 \
     --cluster wanderlust \
     --approve
   ```
   - <b>Create Nodegroup (Master machine)</b>
   ```bash
   eksctl create nodegroup --cluster=wanderlust \
-                       --region=us-east-2 \
+                       --region=eu-north-1 \
                        --name=wanderlust \
-                       --node-type=t2.large \
+                       --node-type=c7i-flex.large \
                        --nodes=2 \
                        --nodes-min=2 \
                        --nodes-max=2 \
@@ -151,7 +151,7 @@ sudo apt-get install jenkins -y
 >  Make sure the ssh-public-key "eks-nodegroup-key is available in your aws account"
 #
 - <b id="Jenkins-worker">Setting up jenkins worker node</b>
-  - Create a new EC2 instance (Jenkins Worker) with 2CPU, 8GB of RAM (t2.large) and 29 GB of storage and install java on it
+  - Create a new EC2 instance (Jenkins Worker) with 2CPU, 8GB of RAM (c7i-flex.large) and 29 GB of storage and install java on it
   ```bash
   sudo apt update -y
   sudo apt install fontconfig openjdk-17-jre -y
@@ -382,10 +382,10 @@ chmod 777 /var/run/docker.sock
   ![image](https://github.com/user-attachments/assets/4cab99aa-cef3-45f6-9150-05004c2f09f8)
   - <b>Add your cluster to argocd</b>
   ```bash
-  argocd cluster add Wanderlust@wanderlust.us-west-1.eksctl.io --name wanderlust-eks-cluster
+  argocd cluster add Wanderlust@wanderlust.eu-north-1.eksctl.io --name wanderlust-eks-cluster
   ```
   > [!Tip]
-  > Wanderlust@wanderlust.us-west-1.eksctl.io --> This should be your EKS Cluster Name.
+  > Wanderlust@wanderlust.eu-north-1.eksctl.io --> This should be your EKS Cluster Name.
 
   ![image](https://github.com/user-attachments/assets/0f36aafd-bab9-4ef8-ba5d-3eb56d850604)
   - <b> Once your cluster is added to argocd, go to argocd console <mark>Settings --> Clusters</mark> and verify it</b>
@@ -522,7 +522,7 @@ kubectl get secret --namespace prometheus stable-grafana -o jsonpath="{.data.adm
 ## Clean Up
 - <b id="Clean">Delete eks cluster</b>
 ```bash
-eksctl delete cluster --name=wanderlust --region=us-west-1
+eksctl delete cluster --name=wanderlust --region=eu-north-1
 ```
 
 #
